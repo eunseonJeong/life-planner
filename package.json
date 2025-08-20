@@ -11,6 +11,9 @@
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
+    "db:dev:generate": "prisma generate --schema=./prisma/schema.sqlite.prisma",
+    "db:dev:push": "prisma db push --schema=./prisma/schema.sqlite.prisma",
+    "db:dev:studio": "prisma studio --schema=./prisma/schema.sqlite.prisma",
     "shadcn:add:button": "tsx ./scripts/add-shadcn-button.ts"
   },
   "dependencies": {
