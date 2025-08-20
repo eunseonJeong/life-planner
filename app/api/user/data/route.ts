@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
           orderBy: { year: 'desc' }
         },
         financialData: {
-          orderBy: [{ year: 'desc' }, { month: 'desc' }]
+          orderBy: { createdAt: 'desc' }
         },
         realEstateData: {
           orderBy: { createdAt: 'desc' }
