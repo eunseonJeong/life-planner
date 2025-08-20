@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
       title: goal.title,
       description: goal.description,
       category: goal.category,
-      targetDate: goal.dueDate,
+      targetDate: goal.targetDate,
       targetValue: goal.targetValue,
       currentValue: goal.currentValue,
       unit: goal.unit,

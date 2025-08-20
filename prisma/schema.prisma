@@ -205,20 +205,20 @@ model Goal {
   id          String   @id @default(uuid())
   userId      String
   title       String
-  description String
+  description String?
   category    String
-  targetDate  String
-  targetValue Int
-  currentValue Int
-  unit        String
-  priority    String
-  status      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  milestones Milestone[]
+  targetValue Int?
+  currentValue Int      @default(0)
+  unit        String?
+  dueDate     DateTime?
+  priority    String    @default("MEDIUM")
+  status      String    @default("IN_PROGRESS")
+  progress    Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  milestones  Milestone[]
 
   @@map("goals")
 }
