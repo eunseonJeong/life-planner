@@ -6,7 +6,13 @@ import {
   Heart,
   Target,
   Calculator,
-  BarChart3
+  BarChart3,
+  Activity,
+  Award,
+  Star,
+  Users,
+  DollarSign,
+  Calendar
 } from 'lucide-react'
 
 export interface MenuItem {
@@ -21,6 +27,14 @@ export interface AlarmSetting {
   key: string
   name: string
   description: string
+  enabled: boolean
+}
+
+export interface DashboardItem {
+  key: string
+  name: string
+  description: string
+  icon: React.ComponentType<{ className?: string }>
   enabled: boolean
 }
 
@@ -73,13 +87,65 @@ export const menuItems: MenuItem[] = [
     description: '재무 목표 달성 시점 자동 계산', 
     icon: Calculator, 
     required: false 
+  }
+]
+
+export const dashboardItems: DashboardItem[] = [
+  {
+    key: 'overallProgress',
+    name: '전체 진행률',
+    description: '모든 목표의 전체 진행률을 보여줍니다',
+    icon: Activity,
+    enabled: true
   },
-  { 
-    key: 'analytics', 
-    name: '분석 리포트', 
-    description: '목표 달성 현황 및 분석 리포트', 
-    icon: BarChart3, 
-    required: false 
+  {
+    key: 'categoryProgress',
+    name: '카테고리별 진행률',
+    description: '커리어, 재무, 관계 등 카테고리별 진행률',
+    icon: BarChart3,
+    enabled: true
+  },
+  {
+    key: 'recentGoals',
+    name: '최근 목표',
+    description: '최근에 추가되거나 수정된 목표들을 보여줍니다',
+    icon: Target,
+    enabled: true
+  },
+  {
+    key: 'upcomingDeadlines',
+    name: '다가오는 마감일',
+    description: '곧 마감되는 목표들을 보여줍니다',
+    icon: Calendar,
+    enabled: true
+  },
+  {
+    key: 'achievements',
+    name: '최근 성취',
+    description: '최근에 달성한 목표들을 보여줍니다',
+    icon: Award,
+    enabled: true
+  },
+  {
+    key: 'recommendations',
+    name: '추천사항',
+    description: '목표 달성을 위한 개인화된 추천사항',
+    icon: Star,
+    enabled: true
+  },
+  {
+    key: 'financialSummary',
+    name: '재무 요약',
+    description: '자산, 수입, 지출 등의 재무 현황 요약',
+    icon: DollarSign,
+    enabled: true
+  },
+  {
+    key: 'monthlyTrends',
+    name: '월별 트렌드',
+    description: '월별 목표 달성률 변화 추이',
+    icon: TrendingUp,
+    enabled: true
   }
 ]
 

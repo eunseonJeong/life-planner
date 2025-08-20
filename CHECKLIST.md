@@ -186,23 +186,7 @@
 
 ---
 
-## 📈 분석 리포트 API 구현
 
-### 분석 데이터 API
-- [ ] `GET /api/analytics/overview` - 전체 분석 개요
-- [ ] `GET /api/analytics/category-progress` - 카테고리별 진행률
-- [ ] `GET /api/analytics/monthly-trends` - 월별 트렌드
-- [ ] `GET /api/analytics/top-goals` - 상위 목표
-- [ ] `GET /api/analytics/recent-achievements` - 최근 성취
-- [ ] `GET /api/analytics/recommendations` - 추천사항
-
-### 리포트 생성 API
-- [ ] `POST /api/analytics/generate-report` - 리포트 생성
-- [ ] `GET /api/analytics/reports` - 생성된 리포트 목록
-- [ ] `GET /api/analytics/reports/{id}` - 특정 리포트 조회
-- [ ] `DELETE /api/analytics/reports/{id}` - 리포트 삭제
-
----
 
 ## ⚙️ 설정 관리 API 구현
 
@@ -245,7 +229,7 @@
 - [x] `AlarmSettings` - 알람 설정 (localStorage 기반 구현)
 - [ ] `Alarms` - 알람 데이터
 - [ ] `Calculations` - 계산기 히스토리
-- [ ] `Reports` - 분석 리포트
+
 - [ ] `Milestones` - 마일스톤
 - [ ] `TechStacks` - 기술 스택
 - [ ] `PortfolioItems` - 포트폴리오 항목
@@ -383,9 +367,8 @@
 4. 성능 최적화
 
 ### Phase 3 (예정)
-1. 고급 분석 기능
-2. 알람 시스템 구현
-3. 모바일 앱 개발
+1. 알람 시스템 구현
+2. 모바일 앱 개발
 
 ---
 
