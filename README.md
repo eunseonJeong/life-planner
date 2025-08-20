@@ -251,7 +251,8 @@
 }
 ```
 
-## 🗄 데이터베이스 스키마 (Prisma)
+<details>
+<summary>🗄 데이터베이스 스키마 (Prisma) - 클릭하여 펼치기</summary>
 
 ### User
 - `id`: UUID (Primary Key)
@@ -367,6 +368,8 @@
 - `portfolioCash`: Int
 - `createdAt`: DateTime
 - `updatedAt`: DateTime
+
+</details>
 
 ## 🔧 개발 스크립트
 
