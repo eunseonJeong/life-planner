@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,10 +25,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // 비밀번호 해시화
+    const hashedPassword = await bcrypt.hash(password, 10)
+
     // 새로운 사용자 생성 (Prisma가 자동으로 UUID 생성)
     const user = await prisma.user.create({
       data: {
         email,
+        password: hashedPassword,
         name: name || null,
       },
     })

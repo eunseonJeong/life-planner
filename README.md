@@ -19,7 +19,7 @@
 - **Styling**: Tailwind CSS, Shadcn UI
 - **Database**: SQLite (개발), PostgreSQL (프로덕션)
 - **ORM**: Prisma
-- **Authentication**: Supabase Auth (현재 Mock)
+- **Authentication**: Prisma 기반 인증
 - **Icons**: Lucide React
 - **Charts**: Recharts
 - **State Management**: localStorage (설정 관리)
