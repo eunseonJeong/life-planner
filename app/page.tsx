@@ -9,11 +9,11 @@ export default function HomePage() {
   const router = useRouter()
 
   useEffect(() => {
-    // 로그인 상태 확인
-    const userId = localStorage.getItem('userId')
-    if (userId) {
-      router.push('/dashboard')
-    }
+    // 로그인 상태 확인 (배포 문제로 임시 주석 처리)
+    // const userId = localStorage.getItem('userId')
+    // if (userId) {
+    //   router.push('/dashboard')
+    // }
   }, [router])
 
   return (
@@ -66,10 +66,17 @@ export default function HomePage() {
         <div className="space-x-4">
           <Button 
             size="lg" 
-            onClick={() => router.push('/auth')}
+            onClick={() => router.push('/dashboard')}
             className="bg-blue-600 hover:bg-blue-700"
           >
-            시작하기
+            대시보드 바로가기
+          </Button>
+          <Button 
+            variant="outline" 
+            size="lg"
+            onClick={() => router.push('/auth')}
+          >
+            로그인
           </Button>
           <Button 
             variant="outline" 
@@ -83,3 +90,4 @@ export default function HomePage() {
     </div>
   )
 }
+
