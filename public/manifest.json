@@ -1,0 +1,25 @@
+{
+  "name": "인생 설계 플래너",
+  "short_name": "Life Planner",
+  "description": "커리어 · 결혼 · 부동산 · 자산관리 통합 플래너",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0500A1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/LP_favicon.svg",
+      "sizes": "14x14",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/LP_favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["productivity", "lifestyle", "finance"],
+  "lang": "ko",
+  "dir": "ltr"
+}
