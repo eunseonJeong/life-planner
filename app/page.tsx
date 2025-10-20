@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { Header } from "@/components/dashboard/header";
+import { CalculatorToggleButton } from "@/components/calculator";
 
 export default function HomePage() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-100">
       {/* Header */}
      <Header />
-
+     <CalculatorToggleButton />
       {/* Hero Section */}
       <section className="py-20 px-6">
         <div className="max-w-7xl mx-auto">

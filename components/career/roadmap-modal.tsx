@@ -203,7 +203,7 @@ export function RoadmapModal({
                         {item.year}년 {item.quarter}분기
                       </span>
                       <div className="flex space-x-2">
-                        {item.skills.map((skill, skillIndex) => (
+                      {Array.isArray(item?.skills) && item.skills.map((skill, skillIndex) => (
                           <Badge key={skillIndex} variant="outline" className="text-xs">
                             {skill}
                           </Badge>

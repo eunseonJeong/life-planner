@@ -233,7 +233,7 @@ export default function CareerPage() {
                 <div>
                   <Label className="text-sm font-medium">부업 수입 목표</Label>
                   <div className="text-2xl font-bold text-green-600">
-                    {careerGoal.sideIncomeTarget.toLocaleString()}원
+                    {careerGoal?.sideIncomeTarget?.toLocaleString()}원
                   </div>
                 </div>
               </div>
@@ -389,7 +389,7 @@ export default function CareerPage() {
                         {item.year}년 {item.quarter}분기
                       </span>
                       <div className="flex space-x-2">
-                        {item.skills.map((skill, skillIndex) => (
+                        {Array.isArray(item?.skills) && item.skills.map((skill, skillIndex) => (
                           <Badge key={skillIndex} variant="outline" className="text-xs">
                             {skill}
                           </Badge>
