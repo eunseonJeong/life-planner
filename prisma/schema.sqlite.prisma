@@ -210,6 +210,7 @@ model Goal {
   targetValue Int?
   currentValue Int      @default(0)
   unit        String?
+  targetDate  DateTime?
   dueDate     DateTime?
   priority    String    @default("MEDIUM")
   status      String    @default("IN_PROGRESS")

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "postinstall": "prisma generate",
+    "postinstall": "node scripts/setup-db.js",
     "generate": "prisma generate",
     "build": "prisma generate && next build",
     "start": "next start",

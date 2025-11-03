@@ -228,12 +228,14 @@ model Milestone {
   id          String   @id @default(uuid())
   goalId      String
   title       String
-  targetValue Int
-  currentValue Int
-  dueDate     String
-  status      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  description String?
+  targetValue Int?
+  currentValue Int      @default(0)
+  dueDate     DateTime?
+  status      String    @default("PENDING")
+  progress    Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   goal Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)
 

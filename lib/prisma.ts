@@ -2,12 +2,9 @@ import { PrismaClient } from "@prisma/client"
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined }
 
-// DATABASE_URL이 없을 경우 명확한 에러 메시지 제공
-if (!process.env.DATABASE_URL) {
-  throw new Error(
-    'DATABASE_URL 환경 변수가 설정되지 않았습니다. Vercel 대시보드에서 환경 변수를 확인하세요.'
-  )
-}
+// DATABASE_URL이 없으면 SQLite 사용 (로컬 개발)
+// DATABASE_URL이 있으면 PostgreSQL 사용 (프로덕션)
+const databaseUrl = process.env.DATABASE_URL || "file:./prisma/dev.db"
 
 export const prisma =
   globalForPrisma.prisma ??
@@ -15,7 +12,7 @@ export const prisma =
     log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
     datasources: {
       db: {
-        url: process.env.DATABASE_URL,
+        url: databaseUrl,
       },
     },
     errorFormat: 'pretty',

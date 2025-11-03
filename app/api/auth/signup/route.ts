@@ -4,6 +4,31 @@ import bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
   try {
+    // DATABASE_URL 로깅 (비밀번호 마스킹)
+    const databaseUrl = process.env.DATABASE_URL
+    console.log('DATABASE_URL:', databaseUrl)
+    if (databaseUrl) {
+      const urlPattern = /postgresql:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/([^?]+)/
+      const match = databaseUrl.match(urlPattern)
+      if (match) {
+        const [, user, password, host, port, database] = match
+        const maskedPassword = password.length > 0 ? '*'.repeat(Math.min(password.length, 10)) : '없음'
+        console.log('=== DATABASE_URL 정보 ===')
+        console.log('User:', user)
+        console.log('Password:', maskedPassword, `(길이: ${password.length})`)
+        console.log('Host:', host)
+        console.log('Port:', port)
+        console.log('Database:', database)
+        console.log('Connection Type:', port === '5432' ? 'Direct Connection' : port === '6543' ? 'Pooler Connection' : 'Unknown')
+        console.log('========================')
+      } else {
+        console.log('⚠️ DATABASE_URL 형식이 올바르지 않습니다.')
+        console.log('URL (마스킹됨):', databaseUrl.replace(/:[^:@]+@/, ':***@'))
+      }
+    } else {
+      console.error('❌ DATABASE_URL 환경 변수가 설정되지 않았습니다.')
+    }
+
     const { email, password, name } = await request.json()
 
     if (!email || !password) {
