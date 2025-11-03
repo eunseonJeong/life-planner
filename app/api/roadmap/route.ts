@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-// import { prisma } from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 
 // GET: 로드맵 아이템 조회
 export async function GET(request: NextRequest) {
@@ -17,36 +17,51 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // 임시 더미 데이터 반환 (DB 연결 문제로 인해)
-    const dummyRoadmapItems = [
-      {
-        id: 'roadmap_1',
-        title: 'React 마스터하기',
-        description: 'React 고급 기능 학습',
-        year: 2024,
-        quarter: 'Q1',
-        status: 'IN_PROGRESS',
-        skills: 'React, TypeScript, Redux',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      },
-      {
-        id: 'roadmap_2',
-        title: 'AWS 자격증 취득',
-        description: 'AWS Solutions Architect 자격증 취득',
-        year: 2024,
-        quarter: 'Q2',
-        status: 'PLANNING',
-        skills: 'AWS, Cloud Computing',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+    const roadmapItems = await prisma.roadmapItem.findMany({
+      where: { userId },
+      orderBy: [
+        { year: 'desc' },
+        { quarter: 'asc' }
+      ]
+    })
+
+    const data = roadmapItems.map((item: any) => {
+      // skills를 배열로 변환 (JSON 문자열이거나 쉼표로 구분된 문자열일 수 있음)
+      let skillsArray: string[] = []
+      if (item.skills) {
+        try {
+          // JSON 문자열인 경우
+          skillsArray = JSON.parse(item.skills)
+        } catch {
+          // 쉼표로 구분된 문자열인 경우
+          skillsArray = item.skills.split(',').map((s: string) => s.trim()).filter((s: string) => s)
+        }
       }
-    ]
+
+      // quarter를 숫자로 변환
+      let quarterNum = item.quarter
+      if (typeof item.quarter === 'string') {
+        const parsed = parseInt(item.quarter)
+        quarterNum = isNaN(parsed) ? 1 : parsed
+      }
+
+      return {
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        year: item.year,
+        quarter: quarterNum,
+        status: item.status,
+        skills: skillsArray,
+        createdAt: item.createdAt.toISOString(),
+        updatedAt: item.updatedAt.toISOString()
+      }
+    })
 
     return NextResponse.json({
       success: true,
-      data: dummyRoadmapItems,
-      message: '로드맵 아이템을 성공적으로 조회했습니다. (임시 모드)'
+      data,
+      message: '로드맵 아이템을 성공적으로 조회했습니다.'
     })
   } catch (error) {
     console.error('로드맵 아이템 조회 실패:', error)
@@ -76,11 +91,108 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 임시로 성공 응답 반환 (DB 연결 문제로 인해)
+    let result
+
+    if (action === 'save') {
+      // 전체 로드맵을 저장하는 경우 (덮어쓰기 방식)
+      // 기존 아이템 삭제
+      await prisma.roadmapItem.deleteMany({
+        where: { userId }
+      })
+
+      // 새 아이템들 생성
+      if (Array.isArray(data) && data.length > 0) {
+        await prisma.roadmapItem.createMany({
+          data: data.map((item: any) => ({
+            userId,
+            title: item.title,
+            description: item.description,
+            year: item.year,
+            quarter: item.quarter.toString(),
+            status: item.status,
+            skills: Array.isArray(item.skills) 
+              ? JSON.stringify(item.skills) 
+              : (typeof item.skills === 'string' ? item.skills : JSON.stringify([]))
+          }))
+        })
+      }
+    } else if (action === 'add') {
+      result = await prisma.roadmapItem.create({
+        data: {
+          userId,
+          title: data.title,
+          description: data.description,
+          year: data.year,
+          quarter: data.quarter.toString(),
+          status: data.status,
+          skills: Array.isArray(data.skills) 
+            ? JSON.stringify(data.skills) 
+            : (typeof data.skills === 'string' ? data.skills : JSON.stringify([]))
+        }
+      })
+    } else if (action === 'update') {
+      result = await prisma.roadmapItem.update({
+        where: { id: data.id },
+        data: {
+          title: data.title,
+          description: data.description,
+          year: data.year,
+          quarter: data.quarter.toString(),
+          status: data.status,
+          skills: Array.isArray(data.skills) 
+            ? JSON.stringify(data.skills) 
+            : (typeof data.skills === 'string' ? data.skills : JSON.stringify([]))
+        }
+      })
+    } else if (action === 'delete') {
+      result = await prisma.roadmapItem.delete({
+        where: { id }
+      })
+    }
+
+    const updatedItems = await prisma.roadmapItem.findMany({
+      where: { userId },
+      orderBy: [
+        { year: 'desc' },
+        { quarter: 'asc' }
+      ]
+    })
+
+    const responseData = updatedItems.map((item: any) => {
+      // skills를 배열로 변환
+      let skillsArray: string[] = []
+      if (item.skills) {
+        try {
+          skillsArray = JSON.parse(item.skills)
+        } catch {
+          skillsArray = item.skills.split(',').map((s: string) => s.trim()).filter((s: string) => s)
+        }
+      }
+
+      // quarter를 숫자로 변환
+      let quarterNum = item.quarter
+      if (typeof item.quarter === 'string') {
+        const parsed = parseInt(item.quarter)
+        quarterNum = isNaN(parsed) ? 1 : parsed
+      }
+
+      return {
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        year: item.year,
+        quarter: quarterNum,
+        status: item.status,
+        skills: skillsArray,
+        createdAt: item.createdAt.toISOString(),
+        updatedAt: item.updatedAt.toISOString()
+      }
+    })
+
     return NextResponse.json({
       success: true,
-      data: [],
-      message: '로드맵 아이템이 성공적으로 저장되었습니다. (임시 모드)'
+      data: responseData,
+      message: '로드맵 아이템이 성공적으로 저장되었습니다.'
     })
   } catch (error) {
     console.error('로드맵 아이템 저장 실패:', error)

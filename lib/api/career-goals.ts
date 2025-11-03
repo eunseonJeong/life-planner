@@ -15,7 +15,11 @@ export async function createCareerGoal(data: CareerGoalFormData, userId: string)
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ ...data, userId }),
+      body: JSON.stringify({ 
+        action: 'add',
+        data,
+        userId 
+      }),
     })
 
     const result = await response.json()
@@ -27,6 +31,60 @@ export async function createCareerGoal(data: CareerGoalFormData, userId: string)
     return result
   } catch (error) {
     console.error('커리어 목표 저장 중 오류:', error)
+    throw error
+  }
+}
+
+export async function updateCareerGoal(data: CareerGoalFormData & { id: string }, userId: string): Promise<ApiResponse<CareerGoal[]>> {
+  try {
+    const response = await fetch('/api/career-goals', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        action: 'update',
+        data,
+        userId 
+      }),
+    })
+
+    const result = await response.json()
+
+    if (!response.ok) {
+      throw new Error(result.error || '커리어 목표 수정에 실패했습니다.')
+    }
+
+    return result
+  } catch (error) {
+    console.error('커리어 목표 수정 중 오류:', error)
+    throw error
+  }
+}
+
+export async function deleteCareerGoal(id: string, userId: string): Promise<ApiResponse<CareerGoal[]>> {
+  try {
+    const response = await fetch('/api/career-goals', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        action: 'delete',
+        id,
+        userId 
+      }),
+    })
+
+    const result = await response.json()
+
+    if (!response.ok) {
+      throw new Error(result.error || '커리어 목표 삭제에 실패했습니다.')
+    }
+
+    return result
+  } catch (error) {
+    console.error('커리어 목표 삭제 중 오류:', error)
     throw error
   }
 }

@@ -126,7 +126,7 @@ export function RoadmapModal({
       const userId = getCurrentUserId()
       const response = await saveRoadmap(roadmap, userId)
       if (response.data) {
-        onSave(roadmap)
+        onSave(response.data)
         onClose()
         alert(response.message || '로드맵이 성공적으로 저장되었습니다.')
       }

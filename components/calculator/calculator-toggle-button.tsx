@@ -9,16 +9,16 @@ import { Calculator } from 'react-calcboard'
 // react-calcboard를 사용한 계산기 컴포넌트
 const CalcBoardComponent = () => {
   return (
-    <div className="w-64">
+    <div className="w-full max-w-sm mx-auto">
       <Calculator 
         orientation="portrait"
         enableKeyboard={true}
         theme={{
-          numberButton: 'bg-gray-200 hover:bg-gray-300 text-gray-800',
-          operationButton: 'bg-orange-500 hover:bg-orange-600 text-white',
-          functionButton: 'bg-gray-500 hover:bg-gray-600 text-white',
-          display: 'bg-gray-900 text-white',
-          container: 'bg-gray-100',
+          numberButton: 'bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg',
+          operationButton: 'bg-orange-500 hover:bg-orange-600 text-white rounded-lg',
+          functionButton: 'bg-gray-500 hover:bg-gray-600 text-white rounded-lg',
+          display: 'bg-gray-900 text-white rounded-lg px-4 py-6 text-right',
+          container: 'bg-gray-100 rounded-lg p-4 shadow-lg',
         }}
       />
     </div>
@@ -45,7 +45,7 @@ export const CalculatorToggleButton = () => {
 
       {/* 계산기 패널 */}
       {isOpen && (
-        <div className="absolute bottom-16 right-0 mb-2">
+        <div className="absolute bottom-16 right-0 mb-2 w-[400px]">
           <Card className="p-0 shadow-2xl border-0">
             <div className="p-3 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-purple-600 rounded-t-lg">
               <div className="flex items-center justify-between">
@@ -60,7 +60,7 @@ export const CalculatorToggleButton = () => {
                 </Button>
               </div>
             </div>
-            <div className="p-4">
+            <div className="p-6">
               <CalcBoardComponent />
             </div>
           </Card>

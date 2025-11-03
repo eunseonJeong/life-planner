@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-// import { prisma } from '@/lib/prisma'
-// import bcrypt from 'bcryptjs'
+import { prisma } from '@/lib/prisma'
+import bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,44 +13,29 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 임시로 더미 사용자 반환 (DB 연결 문제로 인해)
-    const dummyUser = {
-      id: 'temp_user_123',
-      email: email,
-      name: '임시 사용자',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+    const user = await prisma.user.findUnique({
+      where: { email },
+    })
+
+    if (!user) {
+      return NextResponse.json(
+        { error: '이메일 또는 비밀번호가 올바르지 않습니다.' },
+        { status: 401 }
+      )
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { error: '이메일 또는 비밀번호가 올바르지 않습니다.' },
+        { status: 401 }
+      )
     }
 
     return NextResponse.json({
-      message: '로그인이 완료되었습니다. (임시 모드)',
-      user: dummyUser,
+      message: '로그인이 완료되었습니다.',
+      user,
     })
-
-    // DB 사용 부분 (주석 처리)
-    // const user = await prisma.user.findUnique({
-    //   where: { email },
-    // })
-
-    // if (!user) {
-    //   return NextResponse.json(
-    //     { error: '이메일 또는 비밀번호가 올바르지 않습니다.' },
-    //     { status: 401 }
-    //   )
-    // }
-
-    // const isPasswordValid = await bcrypt.compare(password, user.password)
-    // if (!isPasswordValid) {
-    //   return NextResponse.json(
-    //     { error: '이메일 또는 비밀번호가 올바르지 않습니다.' },
-    //     { status: 401 }
-    //   )
-    // }
-
-    // return NextResponse.json({
-    //   message: '로그인이 완료되었습니다.',
-    //   user,
-    // })
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(

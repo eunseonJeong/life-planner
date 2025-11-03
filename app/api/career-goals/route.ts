@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-// import { prisma } from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 
 // GET: 커리어 목표 조회
 export async function GET(request: NextRequest) {
@@ -17,26 +17,30 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // 임시 더미 데이터 반환 (DB 연결 문제로 인해)
-    const dummyCareerGoals = [
-      {
-        id: 'career_1',
-        year: 2024,
-        targetSalary: 60000000,
-        currentSalary: 50000000,
-        techStack: ['React', 'TypeScript', 'Node.js'],
-        networkingGoals: '개발자 커뮤니티 참여',
-        learningGoals: 'AWS 클라우드 자격증 취득',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
-    ]
+    const careerGoals = await prisma.careerGoal.findMany({
+      where: { userId },
+      orderBy: { year: 'desc' }
+    })
+
+    const data = careerGoals.map((goal: any) => ({
+      id: goal.id,
+      year: goal.year,
+      targetSalary: goal.targetSalary,
+      currentSalary: goal.currentSalary,
+      sideIncomeTarget: goal.sideIncomeTarget,
+      techStack: goal.techStack ? goal.techStack.split(',') : [],
+      portfolioCount: goal.portfolioCount,
+      networkingGoals: goal.networkingGoals,
+      learningGoals: goal.learningGoals,
+      createdAt: goal.createdAt.toISOString(),
+      updatedAt: goal.updatedAt.toISOString()
+    }))
 
     return NextResponse.json({
       success: true,
-      data: dummyCareerGoals,
-      count: dummyCareerGoals.length,
-      message: '커리어 목표를 성공적으로 조회했습니다. (임시 모드)'
+      data,
+      count: data.length,
+      message: '커리어 목표를 성공적으로 조회했습니다.'
     })
   } catch (error) {
     console.error('커리어 목표 조회 실패:', error)
@@ -66,11 +70,65 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 임시로 성공 응답 반환 (DB 연결 문제로 인해)
+    let result
+
+    if (action === 'add') {
+      result = await prisma.careerGoal.create({
+        data: {
+          userId,
+          year: data.year,
+          targetSalary: data.targetSalary,
+          currentSalary: data.currentSalary,
+          sideIncomeTarget: data.sideIncomeTarget || 0,
+          techStack: data.techStack ? data.techStack.join(',') : '',
+          portfolioCount: data.portfolioCount || 0,
+          networkingGoals: data.networkingGoals || null,
+          learningGoals: data.learningGoals || null
+        }
+      })
+    } else if (action === 'update') {
+      result = await prisma.careerGoal.update({
+        where: { id: data.id },
+        data: {
+          year: data.year,
+          targetSalary: data.targetSalary,
+          currentSalary: data.currentSalary,
+          sideIncomeTarget: data.sideIncomeTarget || 0,
+          techStack: data.techStack ? data.techStack.join(',') : '',
+          portfolioCount: data.portfolioCount || 0,
+          networkingGoals: data.networkingGoals || null,
+          learningGoals: data.learningGoals || null
+        }
+      })
+    } else if (action === 'delete') {
+      result = await prisma.careerGoal.delete({
+        where: { id }
+      })
+    }
+
+    const updatedGoals = await prisma.careerGoal.findMany({
+      where: { userId },
+      orderBy: { year: 'desc' }
+    })
+
+    const responseData = updatedGoals.map((goal: any) => ({
+      id: goal.id,
+      year: goal.year,
+      targetSalary: goal.targetSalary,
+      currentSalary: goal.currentSalary,
+      sideIncomeTarget: goal.sideIncomeTarget,
+      techStack: goal.techStack ? goal.techStack.split(',') : [],
+      portfolioCount: goal.portfolioCount,
+      networkingGoals: goal.networkingGoals,
+      learningGoals: goal.learningGoals,
+      createdAt: goal.createdAt.toISOString(),
+      updatedAt: goal.updatedAt.toISOString()
+    }))
+
     return NextResponse.json({
       success: true,
-      data: [],
-      message: '커리어 목표가 성공적으로 저장되었습니다. (임시 모드)'
+      data: responseData,
+      message: '커리어 목표가 성공적으로 저장되었습니다.'
     })
   } catch (error) {
     console.error('커리어 목표 저장 실패:', error)

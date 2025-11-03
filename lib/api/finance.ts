@@ -40,7 +40,7 @@ export async function saveFinancialData(data: FinancialFormData, userId: string)
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ ...data, userId }),
+      body: JSON.stringify({ data, userId }),
     })
 
     const result = await response.json()

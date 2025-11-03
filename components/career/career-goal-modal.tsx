@@ -16,7 +16,7 @@ import {
 import { Textarea } from '../ui/textarea'
 import { CareerGoal, CareerGoalFormData } from '@/types/career'
 import { TechStackSelector } from './tech-stack-selector'
-import { createCareerGoal } from '@/lib/api/career-goals'
+import { createCareerGoal, updateCareerGoal } from '@/lib/api/career-goals'
 import { getCurrentUserId } from '@/lib/auth'
 
 interface CareerGoalModalProps {
@@ -105,9 +105,15 @@ export function CareerGoalModal({
     
     try {
       const userId = getCurrentUserId()
-      const response = await createCareerGoal(formData, userId)
+      let response
       
-      if (response.data) {
+      if (mode === 'create') {
+        response = await createCareerGoal(formData, userId)
+      } else if (mode === 'edit' && initialData) {
+        response = await updateCareerGoal({ ...formData, id: initialData.id }, userId)
+      }
+      
+      if (response?.data) {
         onSave(formData)
         onClose()
         // 성공 메시지 표시 (선택사항)

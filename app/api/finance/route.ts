@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-// import { prisma } from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 
 // GET: 자산 정보 조회
 export async function GET(request: NextRequest) {
@@ -17,40 +17,50 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // 임시 더미 데이터 반환 (DB 연결 문제로 인해)
-    const dummyFinancialData = {
-      id: 'finance_1',
-      currentAssets: 50000000,
-      monthlyIncome: 5000000,
+    const financialData = await prisma.financialData.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      take: 1
+    })
+
+    if (financialData.length === 0) {
+      return NextResponse.json({
+        success: true,
+        data: null,
+        message: '자산 정보가 없습니다.'
+      })
+    }
+
+    const data = financialData[0]
+    const responseData = {
+      id: data.id,
+      totalAssets: data.currentAssets,
+      monthlyIncome: data.monthlyIncome,
       monthlyExpenses: {
-        housing: 1500000,
-        food: 500000,
-        transportation: 300000,
-        utilities: 200000,
-        healthcare: 100000,
-        entertainment: 200000,
-        education: 100000,
-        other: 100000
+        fixed: data.monthlyExpensesHousing,
+        living: data.monthlyExpensesFood,
+        other: data.monthlyExpensesOther
       },
       monthlySavings: {
-        emergency: 500000,
-        investment: 1000000,
-        retirement: 500000,
-        other: 200000
+        etf: data.investmentPortfolioOther ? Math.round(data.investmentPortfolioOther * 0.3) : null,
+        cma: data.investmentPortfolioCash,
+        isa: data.investmentPortfolioOther ? Math.round(data.investmentPortfolioOther * 0.2) : null,
+        pension: data.monthlySavingsRetirement,
+        stock: data.investmentPortfolioStocks,
+        crypto: data.investmentPortfolioOther ? Math.round(data.investmentPortfolioOther * 0.1) : null,
+        housing: data.investmentPortfolioRealEstate,
+        youth: data.monthlySavingsOther ? Math.round(data.monthlySavingsOther * 0.25) : null
       },
-      investmentGoals: {
-        shortTerm: 10000000,
-        mediumTerm: 50000000,
-        longTerm: 100000000
-      },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      investmentReturn: 5.0,
+      emergencyFund: data.monthlySavingsEmergency,
+      createdAt: data.createdAt.toISOString(),
+      updatedAt: data.updatedAt.toISOString()
     }
 
     return NextResponse.json({
       success: true,
-      data: dummyFinancialData,
-      message: '자산 정보를 성공적으로 조회했습니다. (임시 모드)'
+      data: responseData,
+      message: '자산 정보를 성공적으로 조회했습니다.'
     })
   } catch (error) {
     console.error('자산 정보 조회 실패:', error)
@@ -80,11 +90,80 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 임시로 성공 응답 반환 (DB 연결 문제로 인해)
+    // 기존 데이터 확인
+    const existingData = await prisma.financialData.findFirst({
+      where: { userId }
+    })
+
+    let result
+    if (existingData) {
+      // 업데이트
+      result = await prisma.financialData.update({
+        where: { id: existingData.id },
+        data: {
+          currentAssets: data.totalAssets || null,
+          monthlyIncome: data.monthlyIncome || null,
+          monthlyExpensesHousing: data.monthlyExpenses?.fixed || null,
+          monthlyExpensesFood: data.monthlyExpenses?.living || null,
+          monthlyExpensesTransportation: null,
+          monthlyExpensesUtilities: null,
+          monthlyExpensesHealthcare: null,
+          monthlyExpensesEntertainment: null,
+          monthlyExpensesEducation: null,
+          monthlyExpensesOther: data.monthlyExpenses?.other || null,
+          monthlySavingsEmergency: data.emergencyFund || null,
+          monthlySavingsInvestment: (data.monthlySavings?.etf || 0) + (data.monthlySavings?.stock || 0) + (data.monthlySavings?.crypto || 0) || null,
+          monthlySavingsRetirement: data.monthlySavings?.pension || null,
+          monthlySavingsOther: (data.monthlySavings?.cma || 0) + (data.monthlySavings?.isa || 0) + (data.monthlySavings?.housing || 0) + (data.monthlySavings?.youth || 0) || null,
+          investmentPortfolioStocks: data.monthlySavings?.stock || null,
+          investmentPortfolioBonds: null,
+          investmentPortfolioRealEstate: data.monthlySavings?.housing || null,
+          investmentPortfolioCash: data.monthlySavings?.cma || null,
+          investmentPortfolioOther: (data.monthlySavings?.etf || 0) + (data.monthlySavings?.isa || 0) + (data.monthlySavings?.pension || 0) + (data.monthlySavings?.crypto || 0) + (data.monthlySavings?.youth || 0) || null,
+          debtInfoMortgage: null,
+          debtInfoCarLoan: null,
+          debtInfoStudentLoan: null,
+          debtInfoCreditCard: null,
+          debtInfoOther: null
+        }
+      })
+    } else {
+      // 생성
+      result = await prisma.financialData.create({
+        data: {
+          userId,
+          currentAssets: data.totalAssets || null,
+          monthlyIncome: data.monthlyIncome || null,
+          monthlyExpensesHousing: data.monthlyExpenses?.fixed || null,
+          monthlyExpensesFood: data.monthlyExpenses?.living || null,
+          monthlyExpensesTransportation: null,
+          monthlyExpensesUtilities: null,
+          monthlyExpensesHealthcare: null,
+          monthlyExpensesEntertainment: null,
+          monthlyExpensesEducation: null,
+          monthlyExpensesOther: data.monthlyExpenses?.other || null,
+          monthlySavingsEmergency: data.emergencyFund || null,
+          monthlySavingsInvestment: (data.monthlySavings?.etf || 0) + (data.monthlySavings?.stock || 0) + (data.monthlySavings?.crypto || 0) || null,
+          monthlySavingsRetirement: data.monthlySavings?.pension || null,
+          monthlySavingsOther: (data.monthlySavings?.cma || 0) + (data.monthlySavings?.isa || 0) + (data.monthlySavings?.housing || 0) + (data.monthlySavings?.youth || 0) || null,
+          investmentPortfolioStocks: data.monthlySavings?.stock || null,
+          investmentPortfolioBonds: null,
+          investmentPortfolioRealEstate: data.monthlySavings?.housing || null,
+          investmentPortfolioCash: data.monthlySavings?.cma || null,
+          investmentPortfolioOther: (data.monthlySavings?.etf || 0) + (data.monthlySavings?.isa || 0) + (data.monthlySavings?.pension || 0) + (data.monthlySavings?.crypto || 0) + (data.monthlySavings?.youth || 0) || null,
+          debtInfoMortgage: null,
+          debtInfoCarLoan: null,
+          debtInfoStudentLoan: null,
+          debtInfoCreditCard: null,
+          debtInfoOther: null
+        }
+      })
+    }
+
     return NextResponse.json({
       success: true,
-      data: {},
-      message: '자산 정보가 성공적으로 저장되었습니다. (임시 모드)'
+      data: result,
+      message: '자산 정보가 성공적으로 저장되었습니다.'
     })
   } catch (error) {
     console.error('자산 정보 저장 실패:', error)
