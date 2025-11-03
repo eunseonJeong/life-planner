@@ -38,8 +38,22 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Login error:', error)
+    
+    // 데이터베이스 연결 오류인 경우 더 명확한 메시지
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    
+    if (errorMessage.includes('Tenant or user not found') || errorMessage.includes('FATAL')) {
+      return NextResponse.json(
+        { 
+          error: '데이터베이스 연결 오류가 발생했습니다. DATABASE_URL 환경 변수를 확인하거나 마이그레이션을 실행해주세요.',
+          details: process.env.NODE_ENV === "development" ? errorMessage : undefined
+        },
+        { status: 500 }
+      )
+    }
+    
     return NextResponse.json(
-      { error: `서버 오류가 발생했습니다: ${error instanceof Error ? error.message : 'Unknown error'}` },
+      { error: `서버 오류가 발생했습니다: ${errorMessage}` },
       { status: 500 }
     )
   }
