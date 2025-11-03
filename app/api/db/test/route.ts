@@ -142,6 +142,8 @@ export async function GET(request: NextRequest) {
       specificHints.push('데이터베이스 서버에 연결할 수 없습니다')
       specificHints.push('호스트 주소와 포트가 올바른지 확인하세요')
       specificHints.push('Supabase 방화벽 설정을 확인하세요')
+      specificHints.push('포트 5432가 외부 접속 허용 상태인지 확인하세요')
+      specificHints.push('Supabase Dashboard에서 프로젝트가 일시 중지되지 않았는지 확인하세요')
     }
     
     if (prismaErrorCode === 'P1001') {
