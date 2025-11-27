@@ -2,7 +2,8 @@
 
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Bell, Settings, LogOut, Home } from 'lucide-react'
+import { Settings, LogOut, Home } from 'lucide-react'
+import { NotificationBell } from '@/components/notifications/notification-bell'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -78,14 +79,7 @@ export function Header() {
             {user ? (
               // 로그인한 사용자 UI
               <>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  disabled
-                  className="text-gray-400"
-                >
-                  <Bell className="h-5 w-5" />
-                </Button>
+                <NotificationBell />
                 <Button 
                   variant="ghost" 
                   size="sm" 

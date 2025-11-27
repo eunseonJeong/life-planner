@@ -24,6 +24,7 @@ model User {
   roadmapItems     RoadmapItem[]
   lifeStages       LifeStage[]
   goals            Goal[]
+  notifications    Notification[]
 
   @@map("users")
 }
@@ -240,4 +241,22 @@ model Milestone {
   goal Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)
 
   @@map("milestones")
+}
+
+model Notification {
+  id          String    @id @default(uuid())
+  userId      String
+  type        String // 'goal_reminder', 'milestone_reminder', 'plan_reminder'
+  title       String
+  message     String
+  relatedId   String? // 목표, 마일스톤, 계획 등의 ID
+  relatedType String? // 'goal', 'milestone', 'plan'
+  isRead      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  readAt      DateTime?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@map("notifications")
 }

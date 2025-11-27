@@ -3,77 +3,73 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  plans            Plan[]
+  id               String             @id @default(uuid())
+  email            String             @unique
+  password         String
+  name             String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  calculators      Calculator[]
   careerGoals      CareerGoal[]
   financialData    FinancialData[]
+  goals            Goal[]
+  lifeStages       LifeStage[]
+  plans            Plan[]
   realEstateData   RealEstateData[]
   relationshipData RelationshipData[]
-  calculators      Calculator[]
   roadmapItems     RoadmapItem[]
-  lifeStages       LifeStage[]
-  goals            Goal[]
+  notifications    Notification[]
 
   @@map("users")
 }
 
 model Plan {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   userId      String
   year        Int
   category    String
   title       String
   description String?
   priority    String
-  status      String   @default("PLANNING")
-  progress    Int      @default(0)
+  status      String    @default("PLANNING")
+  progress    Int       @default(0)
   dueDate     DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("plans")
 }
 
 model CareerGoal {
-  id                String   @id @default(uuid())
-  userId            String
-  year              Int
-  targetSalary      Int
-  currentSalary     Int?
-  sideIncomeTarget  Int      @default(0)
-  techStack         String
-  portfolioCount    Int      @default(0)
-  networkingGoals   String?
-  learningGoals     String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id               String   @id @default(uuid())
+  userId           String
+  year             Int
+  targetSalary     Int
+  currentSalary    Int?
+  sideIncomeTarget Int      @default(0)
+  techStack        String
+  portfolioCount   Int      @default(0)
+  networkingGoals  String?
+  learningGoals    String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("career_goals")
 }
 
 model FinancialData {
-  id                String   @id @default(uuid())
-  userId            String
-  currentAssets     Int?
-  monthlyIncome     Int?
-  
-  // 월 지출 세부사항
+  id                            String   @id @default(uuid())
+  userId                        String
+  currentAssets                 Int?
+  monthlyIncome                 Int?
   monthlyExpensesHousing        Int?
   monthlyExpensesFood           Int?
   monthlyExpensesTransportation Int?
@@ -82,88 +78,77 @@ model FinancialData {
   monthlyExpensesEntertainment  Int?
   monthlyExpensesEducation      Int?
   monthlyExpensesOther          Int?
-  
-  // 월 저축 세부사항
-  monthlySavingsEmergency   Int?
-  monthlySavingsInvestment  Int?
-  monthlySavingsRetirement  Int?
-  monthlySavingsOther       Int?
-  
-  // 투자 포트폴리오
-  investmentPortfolioStocks    Int?
-  investmentPortfolioBonds     Int?
+  monthlySavingsEmergency       Int?
+  monthlySavingsInvestment      Int?
+  monthlySavingsRetirement      Int?
+  monthlySavingsOther           Int?
+  investmentPortfolioStocks     Int?
+  investmentPortfolioBonds      Int?
   investmentPortfolioRealEstate Int?
-  investmentPortfolioCash      Int?
-  investmentPortfolioOther     Int?
-  
-  // 부채 정보
-  debtInfoMortgage    Int?
-  debtInfoCarLoan     Int?
-  debtInfoStudentLoan Int?
-  debtInfoCreditCard  Int?
-  debtInfoOther       Int?
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  investmentPortfolioCash       Int?
+  investmentPortfolioOther      Int?
+  debtInfoMortgage              Int?
+  debtInfoCarLoan               Int?
+  debtInfoStudentLoan           Int?
+  debtInfoCreditCard            Int?
+  debtInfoOther                 Int?
+  createdAt                     DateTime @default(now())
+  updatedAt                     DateTime @updatedAt
+  user                          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("financial_data")
 }
 
 model RealEstateData {
-  id               String   @id @default(uuid())
-  userId           String
-  preferredRegion  String
-  budgetRange      String
-  purchaseMethod   String
-  targetYear       Int
-  downPayment      Int      @default(0)
-  loanAmount       Int      @default(0)
-  notes            String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String   @id @default(uuid())
+  userId          String
+  preferredRegion String
+  budgetRange     String
+  purchaseMethod  String
+  targetYear      Int
+  downPayment     Int      @default(0)
+  loanAmount      Int      @default(0)
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("real_estate_data")
 }
 
 model RelationshipData {
-  id                   String   @id @default(uuid())
-  userId               String
-  relationshipStatus   String   @default("SINGLE")
-  targetMarriageYear   Int?
-  monthlyDateBudget    Int      @default(0)
-  weddingBudget        Int      @default(0)
-  notes                String?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                 String   @id @default(uuid())
+  userId             String
+  relationshipStatus String   @default("SINGLE")
+  targetMarriageYear Int?
+  monthlyDateBudget  Int      @default(0)
+  weddingBudget      Int      @default(0)
+  notes              String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("relationship_data")
 }
 
 model Calculator {
-  id                String   @id @default(uuid())
-  userId            String
-  name              String
-  currentAge        Int
-  currentSalary     Int
-  monthlyExpenses   Int
-  monthlySavings    Int
-  investmentReturn  Float
-  targetAmount      Int
-  targetAge         Int
-  portfolioEtf      Float
-  portfolioStocks   Float
+  id                  String   @id @default(uuid())
+  userId              String
+  name                String
+  currentAge          Int
+  currentSalary       Int
+  monthlyExpenses     Int
+  monthlySavings      Int
+  investmentReturn    Float
+  targetAmount        Int
+  targetAge           Int
+  portfolioEtf        Float
+  portfolioStocks     Float
   portfolioRealEstate Float
-  portfolioCash     Float
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  portfolioCash       Float
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("calculators")
 }
@@ -179,8 +164,7 @@ model RoadmapItem {
   skills      String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("roadmap_items")
 }
@@ -196,49 +180,64 @@ model LifeStage {
   priority      String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("life_stages")
 }
 
 model Goal {
-  id          String   @id @default(uuid())
-  userId      String
-  title       String
-  description String?
-  category    String
-  targetValue Int?
-  currentValue Int      @default(0)
-  unit        String?
-  targetDate  DateTime?
-  dueDate     DateTime?
-  priority    String    @default("MEDIUM")
-  status      String    @default("IN_PROGRESS")
-  progress    Int       @default(0)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  milestones  Milestone[]
+  id           String      @id @default(uuid())
+  userId       String
+  title        String
+  description  String?
+  category     String
+  targetValue  Int?
+  currentValue Int         @default(0)
+  unit         String?
+  targetDate   DateTime?
+  dueDate      DateTime?
+  priority     String      @default("MEDIUM")
+  status       String      @default("IN_PROGRESS")
+  progress     Int         @default(0)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  milestones   Milestone[]
 
   @@map("goals")
 }
 
 model Milestone {
-  id          String   @id @default(uuid())
-  goalId      String
-  title       String
-  description String?
-  targetValue Int?
-  currentValue Int      @default(0)
-  dueDate     DateTime?
-  status      String    @default("PENDING")
-  progress    Int       @default(0)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  goal Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  id           String    @id @default(uuid())
+  goalId       String
+  title        String
+  description  String?
+  targetValue  Int?
+  currentValue Int       @default(0)
+  dueDate      DateTime?
+  status       String    @default("PENDING")
+  progress     Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  goal         Goal      @relation(fields: [goalId], references: [id], onDelete: Cascade)
 
   @@map("milestones")
+}
+
+model Notification {
+  id          String    @id @default(uuid())
+  userId      String
+  type        String // 'goal_reminder', 'milestone_reminder', 'plan_reminder'
+  title       String
+  message     String
+  relatedId   String? // 목표, 마일스톤, 계획 등의 ID
+  relatedType String? // 'goal', 'milestone', 'plan'
+  isRead      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  readAt      DateTime?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@map("notifications")
 }
