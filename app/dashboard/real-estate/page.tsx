@@ -32,6 +32,7 @@ import {
 } from 'lucide-react'
 import { RealEstateData, RegionOption } from '@/types/real-estate'
 import { getRealEstateData, getRegionList } from '@/lib/api/real-estate'
+import { CheongyakList } from '@/components/cheongyak/cheongyak-list'
 
 interface Region {
   name: string
@@ -496,6 +497,9 @@ export default function RealEstatePage() {
           </div>
         </CardContent>
       </Card> */}
+
+      {/* 청약 분양정보 리스트 */}
+      <CheongyakList limit={10} />
 
       {/* 2025년 청약 정책 */}
       <Card>

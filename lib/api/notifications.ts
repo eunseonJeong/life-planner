@@ -7,9 +7,18 @@ const API_BASE = '/api/notifications'
  * 알림 목록 조회
  */
 export async function getNotifications(
-  userId: string,
+  userId: string | null,
   options?: { unreadOnly?: boolean; limit?: number }
 ): Promise<NotificationResponse> {
+  // 로그인하지 않은 경우 조기 반환
+  if (!userId) {
+    return {
+      success: false,
+      data: [],
+      error: '로그인이 필요합니다.',
+    }
+  }
+
   try {
     const params = new URLSearchParams()
     if (options?.unreadOnly) params.append('unreadOnly', 'true')
@@ -24,14 +33,21 @@ export async function getNotifications(
     })
 
     if (!response.ok) {
+      // 401 에러는 조용히 처리
+      if (response.status === 401) {
+        return { success: false, data: [], error: '인증이 필요합니다.' }
+      }
       throw new Error('알림 조회에 실패했습니다.')
     }
 
     return await response.json()
   } catch (error) {
-    console.error('알림 조회 실패:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('알림 조회 스킵:', error instanceof Error ? error.message : error)
+    }
     return {
       success: false,
+      data: [],
       error: error instanceof Error ? error.message : '알림 조회에 실패했습니다.',
     }
   }
@@ -40,7 +56,15 @@ export async function getNotifications(
 /**
  * 알림 체크 및 생성
  */
-export async function checkNotifications(userId: string): Promise<NotificationResponse> {
+export async function checkNotifications(userId: string | null): Promise<NotificationResponse> {
+  // 로그인하지 않은 경우 조기 반환
+  if (!userId) {
+    return {
+      success: false,
+      error: '로그인이 필요합니다.',
+    }
+  }
+
   try {
     const response = await fetch(API_BASE, {
       method: 'POST',
@@ -52,12 +76,19 @@ export async function checkNotifications(userId: string): Promise<NotificationRe
     })
 
     if (!response.ok) {
+      // 401 에러는 조용히 처리
+      if (response.status === 401) {
+        return { success: false, error: '인증이 필요합니다.' }
+      }
       throw new Error('알림 체크에 실패했습니다.')
     }
 
     return await response.json()
   } catch (error) {
-    console.error('알림 체크 실패:', error)
+    // 네트워크 에러나 인증 에러는 로그만 남기고 조용히 처리
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('알림 체크 스킵:', error instanceof Error ? error.message : error)
+    }
     return {
       success: false,
       error: error instanceof Error ? error.message : '알림 체크에 실패했습니다.',
@@ -73,6 +104,10 @@ export async function markNotificationAsRead(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const userId = getCurrentUserId()
+    if (!userId) {
+      return { success: false, error: '로그인이 필요합니다.' }
+    }
+
     const response = await fetch(API_BASE, {
       method: 'PATCH',
       headers: {
@@ -102,6 +137,10 @@ export async function markNotificationAsRead(
 export async function markAllNotificationsAsRead(): Promise<{ success: boolean; error?: string }> {
   try {
     const userId = getCurrentUserId()
+    if (!userId) {
+      return { success: false, error: '로그인이 필요합니다.' }
+    }
+
     const response = await fetch(API_BASE, {
       method: 'PATCH',
       headers: {
