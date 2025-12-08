@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { Header } from "@/components/dashboard/header";
-import { CalculatorToggleButton } from "@/components/calculator";
+import { CalculatorToggleButton } from "@/components/calculator/calculator-toggle-button";
 
 export default function HomePage() {
   const router = useRouter();
