@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { getNotifications, checkNotifications, markNotificationAsRead, markAllNotificationsAsRead } from '@/lib/api/notifications'
 import { getCurrentUserId } from '@/lib/auth'
-import { Notification } from '@/types/notifications'
+import type { Notification } from '@/types/notifications'
 
 interface UseNotificationsReturn {
   notifications: Notification[]
