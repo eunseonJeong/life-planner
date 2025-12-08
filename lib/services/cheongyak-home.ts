@@ -257,7 +257,7 @@ export async function getCheongyakDetail(
       throw new Error('청약홈 API 서비스키가 설정되지 않았습니다.')
     }
 
-    const endpoint = ENDPOINTS[type].list
+    const endpoint = ENDPOINTS[type as keyof typeof ENDPOINTS].list
     const url = `${API_CONFIG.baseUrl}${endpoint}`
     
     const queryParams = new URLSearchParams({
@@ -306,7 +306,7 @@ export async function getCheongyakModelDetail(
       throw new Error('청약홈 API 서비스키가 설정되지 않았습니다.')
     }
 
-    const endpoint = ENDPOINTS[type].model
+    const endpoint = ENDPOINTS[type as keyof typeof ENDPOINTS].model
     const url = `${API_CONFIG.baseUrl}${endpoint}`
     
     const queryParams = new URLSearchParams({
