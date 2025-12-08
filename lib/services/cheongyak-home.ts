@@ -27,7 +27,7 @@ const API_CONFIG = {
 }
 
 // 청약 유형
-export type CheongyakType = 'apt' | 'officetel' | 'remndr' | 'public_rent' | 'optional'
+export type CheongyakType = 'apt' | 'officetel' | 'remndr' | 'public_rent' | 'optional' | 'all'
 
 // API 엔드포인트 매핑
 const ENDPOINTS = {
