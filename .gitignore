@@ -42,8 +42,7 @@ lerna-debug.log*
 .env.development.local
 .env.test.local
 .env.production.local
-.PROJECT_RESUME_251119.md
-.SENTRY_SETUP.md
+/md/
 
 # IDE and editor files
 .idea/
