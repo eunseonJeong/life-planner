@@ -19,12 +19,15 @@ import {
   CreditCard,
   Home,
   Car,
-  Edit
+  Edit,
+  RefreshCw
 } from 'lucide-react'
 import { FinanceModal } from '@/components/finance/finance-modal'
 import { LifeStageModal } from '@/components/finance/life-stage-modal'
 import { FinancialData, FinancialFormData, LifeStage } from '@/types/finance'
+import { AccountSummary } from '@/types/account'
 import { getFinancialData, saveFinancialData } from '@/lib/api/finance'
+import { getAccounts } from '@/lib/api/accounts'
 import { getLifeStages } from '@/lib/api/life-stages'
 import { getCurrentUserId } from '@/lib/auth'
 import { PORTFOLIO_ITEMS } from '@/lib/data/portfolio-items'
@@ -38,6 +41,10 @@ export default function FinancePage() {
   const [isLifeStageModalOpen, setIsLifeStageModalOpen] = useState(false)
 
   const [lifeStages, setLifeStages] = useState<LifeStage[]>([])
+  const [accounts, setAccounts] = useState<AccountSummary[]>([])
+  const [accountsTotalBalance, setAccountsTotalBalance] = useState(0)
+  const [isAccountsLoading, setIsAccountsLoading] = useState(false)
+  const [accountsError, setAccountsError] = useState('')
 
   const [yearlyProjection, setYearlyProjection] = useState<any[]>([])
 
@@ -47,6 +54,25 @@ export default function FinancePage() {
 
   // 초기 데이터 로드
   useEffect(() => {
+    const loadAccounts = async (userId: string) => {
+      setIsAccountsLoading(true)
+      setAccountsError('')
+      try {
+        const accountsResponse = await getAccounts(userId)
+        if (accountsResponse.success && accountsResponse.data) {
+          setAccounts(accountsResponse.data.accounts)
+          setAccountsTotalBalance(accountsResponse.data.totalBalance)
+        }
+      } catch (error) {
+        console.error('계좌 목록 조회 실패:', error)
+        setAccounts([])
+        setAccountsTotalBalance(0)
+        setAccountsError('계좌 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.')
+      } finally {
+        setIsAccountsLoading(false)
+      }
+    }
+
     const loadData = async () => {
       setIsLoading(true)
       try {
@@ -58,6 +84,9 @@ export default function FinancePage() {
           setFinancialData(financialResponse.data)
         }
 
+        // 계좌 목록/잔액 로드
+        await loadAccounts(userId)
+
         // 생애주기별 자금 계획 로드
         const lifeStagesResponse = await getLifeStages(userId)
         if (lifeStagesResponse.success && lifeStagesResponse.data) {
@@ -68,6 +97,8 @@ export default function FinancePage() {
         // 에러가 발생해도 빈 객체로 초기화
         setFinancialData({})
         setLifeStages([])
+        setAccounts([])
+        setAccountsTotalBalance(0)
       } finally {
         setIsLoading(false)
       }
@@ -75,6 +106,28 @@ export default function FinancePage() {
 
     loadData()
   }, [])
+
+  const handleFetchAccounts = async () => {
+    const userId = getCurrentUserId()
+    await (async () => {
+      setIsAccountsLoading(true)
+      setAccountsError('')
+      try {
+        const accountsResponse = await getAccounts(userId)
+        if (accountsResponse.success && accountsResponse.data) {
+          setAccounts(accountsResponse.data.accounts)
+          setAccountsTotalBalance(accountsResponse.data.totalBalance)
+        }
+      } catch (error) {
+        console.error('계좌 목록 조회 실패:', error)
+        setAccounts([])
+        setAccountsTotalBalance(0)
+        setAccountsError('계좌 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.')
+      } finally {
+        setIsAccountsLoading(false)
+      }
+    })()
+  }
 
   const calculateYearlyProjection = () => {
     const projection = []
@@ -163,10 +216,22 @@ export default function FinancePage() {
           <h1 className="text-3xl font-bold text-gray-900">자산 관리</h1>
           <p className="text-gray-600">생애주기별 자금 계획과 투자 포트폴리오를 관리하세요</p>
         </div>
-        <Button onClick={() => handleOpenModal('edit')}>
-          자산 정보 수정
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={handleFetchAccounts} disabled={isAccountsLoading}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${isAccountsLoading ? 'animate-spin' : ''}`} />
+            내 계좌 가져오기
+          </Button>
+          <Button onClick={() => handleOpenModal('edit')}>
+            자산 정보 수정
+          </Button>
+        </div>
       </div>
+
+      {accountsError && (
+        <Card>
+          <CardContent className="py-4 text-sm text-red-600">{accountsError}</CardContent>
+        </Card>
+      )}
 
       {/* 로딩 상태 */}
       {isLoading && (
@@ -179,7 +244,7 @@ export default function FinancePage() {
       )}
 
       {/* 빈 상태 - 데이터가 없을 때 */}
-      {!isLoading && Object.keys(financialData).length === 0 && lifeStages.length === 0 && (
+      {!isLoading && Object.keys(financialData).length === 0 && lifeStages.length === 0 && accounts.length === 0 && (
         <Card>
           <CardContent className="p-8 text-center">
             <DollarSign className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -198,8 +263,37 @@ export default function FinancePage() {
       )}
 
       {/* 데이터가 있을 때만 표시 */}
-      {!isLoading && (Object.keys(financialData).length > 0 || lifeStages.length > 0) && (
+      {!isLoading && (Object.keys(financialData).length > 0 || lifeStages.length > 0 || accounts.length > 0) && (
         <>
+      {/* 계좌 목록/잔액 */}
+      {accounts.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center">
+                <CreditCard className="mr-2 h-5 w-5" />
+                계좌 목록/잔액
+              </div>
+              <div className="text-sm font-medium text-blue-700">
+                합계 {formatCurrency(accountsTotalBalance)}
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {accounts.map((account) => (
+                <div key={account.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <div className="font-medium">{account.name}</div>
+                    <div className="text-xs text-gray-500">{new Date(account.lastUpdated).toLocaleDateString('ko-KR')} 기준</div>
+                  </div>
+                  <div className="font-semibold text-gray-900">{formatCurrency(account.balance)}</div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* 현재 자산 현황 */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

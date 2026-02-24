@@ -84,16 +84,6 @@ export default function DashboardPage() {
     // 실제로는 API에서 데이터를 가져옴
     const mockPlans: Plan[] = [
       {
-        id: '1',
-        title: '시니어 개발자 진급',
-        category: 'CAREER',
-        year: 2025,
-        priority: 'HIGH',
-        status: 'IN_PROGRESS',
-        progress: 60,
-        dueDate: '2025-12-31'
-      },
-      {
         id: '2',
         title: '강남 아파트 구매',
         category: 'REAL_ESTATE',
@@ -102,16 +92,6 @@ export default function DashboardPage() {
         status: 'PLANNING',
         progress: 20,
         dueDate: '2026-06-30'
-      },
-      {
-        id: '3',
-        title: '결혼 준비',
-        category: 'RELATIONSHIP',
-        year: 2025,
-        priority: 'MEDIUM',
-        status: 'PLANNING',
-        progress: 30,
-        dueDate: '2025-12-31'
       }
     ]
     setPlans(mockPlans)
@@ -204,7 +184,7 @@ export default function DashboardPage() {
       </div>
 
       {/* 전체 진행률 */}
-      {shouldShowSection('overallProgress') && (
+      {/* {shouldShowSection('overallProgress') && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -236,7 +216,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-      )}
+      )} */}
 
       {/* 카테고리별 진행률 */}
       {shouldShowSection('categoryProgress') && (
@@ -250,11 +230,8 @@ export default function DashboardPage() {
           <CardContent>
             <div className="space-y-4">
               {[
-                { category: '커리어', progress: 75, color: 'bg-blue-500' },
                 { category: '재무', progress: 60, color: 'bg-green-500' },
-                { category: '관계', progress: 85, color: 'bg-pink-500' },
-                { category: '부동산', progress: 45, color: 'bg-orange-500' },
-                { category: '여행', progress: 30, color: 'bg-purple-500' }
+                { category: '부동산', progress: 45, color: 'bg-orange-500' }
               ].map((item, index) => (
                 <div key={index} className="space-y-2">
                   <div className="flex justify-between text-sm">
@@ -270,7 +247,7 @@ export default function DashboardPage() {
       )}
 
       {/* 최근 목표 */}
-      {shouldShowSection('recentGoals') && (
+      {/* {shouldShowSection('recentGoals') && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -302,10 +279,10 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-      )}
+      )} */}
 
       {/* 다가오는 마감일 */}
-      {shouldShowSection('upcomingDeadlines') && (
+      {/* {shouldShowSection('upcomingDeadlines') && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -338,10 +315,10 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-      )}
+      )} */}
 
       {/* 최근 성취 */}
-      {shouldShowSection('achievements') && (
+      {/* {shouldShowSection('achievements') && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -370,10 +347,10 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-      )}
+      )} */}
 
       {/* 추천사항 */}
-      {shouldShowSection('recommendations') && (
+      {/* {shouldShowSection('recommendations') && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -408,7 +385,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-      )}
+      )} */}
 
       {/* 재무 요약 */}
       {shouldShowSection('financialSummary') && (
@@ -443,7 +420,7 @@ export default function DashboardPage() {
       )}
 
       {/* 월별 트렌드 */}
-      {shouldShowSection('monthlyTrends') && (
+      {/* {shouldShowSection('monthlyTrends') && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -472,7 +449,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-      )}
+      )} */}
 
       {/* 필터 */}
       <Card>
@@ -503,9 +480,8 @@ export default function DashboardPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">전체</SelectItem>
-                  <SelectItem value="CAREER">커리어</SelectItem>
                   <SelectItem value="REAL_ESTATE">부동산</SelectItem>
-                  <SelectItem value="RELATIONSHIP">관계</SelectItem>
+                  <SelectItem value="FINANCE">자산 관리</SelectItem>
                 </SelectContent>
               </Select>
             </div>
