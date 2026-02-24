@@ -7,9 +7,15 @@ interface ApiResponse<T> {
   error?: string
 }
 
-export async function getAccounts(userId: string): Promise<ApiResponse<AccountsPayload>> {
+export async function getAccounts(userId: string, fintechUseNum?: string): Promise<ApiResponse<AccountsPayload>> {
   try {
-    const response = await fetch(`/api/accounts?userId=${userId}`, {
+    const query = new URLSearchParams()
+    query.set('userId', userId)
+    if (fintechUseNum) {
+      query.set('fintech_use_num', fintechUseNum)
+    }
+
+    const response = await fetch(`/api/accounts?${query.toString()}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
